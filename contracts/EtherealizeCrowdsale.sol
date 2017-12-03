@@ -4,14 +4,14 @@ import 'contracts/EtherealizeMint.sol';
 import 'zeppelin-solidity/contracts/math/SafeMath.sol';
 
 /**
- * @title Crowdsale
- * @dev Crowdsale is a base contract for managing a token crowdsale.
+ * @title EtherealizeCrowdsale
+ * @dev EtherealizeCrowdsale is a base contract for managing a token crowdsale.
  * Crowdsales have a start and end timestamps, where investors can make
  * token purchases and the crowdsale will assign them tokens based
  * on a token per ETH rate. Funds collected are forwarded to a wallet
  * as they arrive.
  */
-contract Crowdsale {
+contract EtherealizeCrowdsale {
   using SafeMath for uint256;
 
   // The token being sold
@@ -40,13 +40,14 @@ contract Crowdsale {
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
 
 
-  function Crowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
+  function EtherealizeCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet) public {
     require(_startTime >= now);
     require(_endTime >= _startTime);
     require(_rate > 0);
     require(_wallet != address(0));
 
     token = createTokenContract();
+    // token.setFundWallet(_wallet);
     startTime = _startTime;
     endTime = _endTime;
     rate = _rate;
