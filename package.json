@@ -1,0 +1,22 @@
+{
+  "name": "etherealize-mint",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/etherealize/etherealize-mint.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/etherealize/etherealize-mint/issues"
+  },
+  "homepage": "https://github.com/etherealize/etherealize-mint#readme",
+  "dependencies": {
+    "zeppelin-solidity": "^1.4.0"
+  }
+}
