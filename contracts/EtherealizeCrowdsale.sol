@@ -2,6 +2,7 @@ pragma solidity ^0.4.18;
 
 import 'contracts/EtherealizeMint.sol';
 import 'zeppelin-solidity/contracts/math/SafeMath.sol';
+// import 'zeppelin-solidity/contracts/token/EtherealizeMint.sol';
 
 /**
  * @title EtherealizeCrowdsale
@@ -47,7 +48,7 @@ contract EtherealizeCrowdsale {
     require(_wallet != address(0));
 
     token = createTokenContract();
-    // token.setFundWallet(_wallet);
+    token.setFundWallet(_wallet);
     startTime = _startTime;
     endTime = _endTime;
     rate = _rate;

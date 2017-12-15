@@ -1,0 +1,53 @@
+
+<html>
+<head>
+    <!-- This script is needed to expose ethereum RPC commands. Enables connection to ethereum -->
+    <script src="http://cdn.rawgit.com/ethereum/web3.js/0.16.0/dist/web3.min.js"></script>
+    <!-- This script is needed so that we can sign our Ethereum transactions locally. Needed the Tx and Buffer objects -->
+    <script src="https://cdn.rawgit.com/ethereumjs/browser-builds/2fb69a714afe092b06645286f14b94f41e5c062c/dist/ethereumjs-tx.js"></script>         
+    <script>
+        // web3 = new Web3(new Web3.providers.HttpProvider("http://development.etherealize.io:8546"));
+        web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io"));
+        /** Check if you are able to connect to this provider **/
+        if(!web3.isConnected())
+            console.log("not connected");
+        else
+            console.log("connected")
+    </script>
+</head>
+<body>
+    
+<script>
+    var userAddress = "0xe723cfe87766398f7c7d378c56b1aa3f3007f321";
+    var userPrivateKey = "100a83e82810ed1280c9bd4d3679f09b0a2e44553635aab2fdfce88e8fdcfe36";
+    var count = web3.eth.getTransactionCount(userAddress);
+    var abiArray = [{"constant":true,"inputs":[],"name":"rate","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"endTime","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"weiRaised","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"wallet","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"startTime","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_startTime","type":"uint256"},{"name":"_endTime","type":"uint256"},{"name":"_rate","type":"uint256"},{"name":"_wallet","type":"address"},{"name":"_tokenAddress","type":"address"}],"name":"SetupCrowdsale","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"beneficiary","type":"address"}],"name":"buyTokens","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"hasEnded","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"token","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"purchaser","type":"address"},{"indexed":true,"name":"beneficiary","type":"address"},{"indexed":false,"name":"value","type":"uint256"},{"indexed":false,"name":"amount","type":"uint256"}],"name":"TokenPurchase","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"previousOwner","type":"address"},{"indexed":true,"name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"}];
+    var contractAddress = "0x94d5cc21f6c7e2bd9f513fde04f35886975aa46d";
+    var contract = web3.eth.contract(abiArray).at(contractAddress);
+    var rawTransaction = {
+        "from": "0xe723cfe87766398f7c7d378c56b1aa3f3007f321",
+        "nonce": web3.toHex(count),
+        "gas": "4704624",
+        "gasLimit": "2000000",
+        "to": contractAddress,
+        "value": web3.toWei(0.05, "ether"),
+        "data": contract.buyTokens.call(userAddress,{from: userAddress}),
+        "chainId": 0x03
+    };
+
+    var privKey = new EthJS.Buffer.Buffer(userPrivateKey, 'hex');
+    var tx = new EthJS.Tx(rawTransaction);
+
+    tx.sign(privKey);
+    var serializedTx = tx.serialize();
+
+    web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'), function(err, hash) {
+        if (!err)
+            console.log(hash);
+        else
+            console.log(err);
+    });
+</script>
+
+</body>
+</html>
