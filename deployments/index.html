@@ -31,7 +31,7 @@
         "gasLimit": "2000000",
         "to": contractAddress,
         "value": web3.toWei(0.05, "ether"),
-        "data": contract.buyTokens.call(userAddress,{from: userAddress}),
+        "data": contract.buyTokens.call(userAddress,{from: userAddress, gas: '4700000', value: web3.toWei(0.05, "ether")}),
         "chainId": 0x03
     };
 

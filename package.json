@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "PORT=3006 react-scripts start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,6 +18,14 @@
   },
   "homepage": "https://github.com/etherealize/etherealize-mint#readme",
   "dependencies": {
+    "axios": "^0.17.1",
+    "material-ui": "^0.19.4",
+    "moment": "^2.19.3",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "^1.0.17",
+    "web3": "^1.0.0-beta.26",
     "truffle": "^4.0.1",
     "truffle-hdwallet-provider": "0.0.3",
     "zeppelin-solidity": "^1.4.0"

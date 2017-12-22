@@ -9,9 +9,9 @@ var endTime = startTime + (86400 * 30); // 30 days
 console.log(endTime);
 var rate = 4;
 console.log(rate);
-var tokenAddress = 0x3ded45a20f196ecb673477d3a8f4b3fa05cbe348;
+var tokenAddress = "0x3ded45a20f196ecb673477d3a8f4b3fa05cbe348";
 console.log(tokenAddress);
-var fundWallet = 0xe47c4befb25055860fd026e96885b30c7a244b30;
+var fundWallet = "0xe47c4befb25055860fd026e96885b30c7a244b30";
 console.log(fundWallet);
 
 var gasLimit = web3.eth.getBlock('latest').gasLimit;
