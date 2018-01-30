@@ -226,190 +226,282 @@ contract StandardToken is ERC20, BasicToken {
  
  
 // Define a contract
-contract EtherealizeMint is StandardToken, Ownable {
-    // Set a name for the token
-    string public name = "EtherealizeMint";
-    // Set a symbol for the token
-    string public symbol = "ETR";
-    // Specify to what number of decimals the token be divisible to. Make 1:1 with gwei.
-    uint public decimals = 3;
-    // Specify the divisble number for percentage calculations
-    uint public hundred = 100;
-    // Specify the factor of minted tokens that go to the fund. Will be divided by 100 to form a precentage
-    uint public tokenForFundFactor = 3;
-    // Holds the funds target wallet address for a percentage of minted tokens to be sent to.
-    address public fundWallet;
- 
- 
-    event Mint(address indexed to, uint256 amount);
-    event MintFinished();
- 
-    bool public mintingFinished = false;
- 
- 
-    modifier canMint() {
-        require(!mintingFinished);
-        _;
-    }
- 
-    /**
-    * @dev Function to stop minting new tokens.
-    * @return True if the operation was successful.
-    */
-    function finishMinting() onlyOwner canMint public returns (bool) {
-        mintingFinished = true;
-        MintFinished();
-        return true;
-    }
- 
-    /**
-    * @dev Function to set fundAddress. This address is where fund minted tokens are destined for.
-    * @param _targetAddress The address that will receive the minted tokens.
-    * @return A boolean that indicates if the operation was successful.
-    */
-    function setFundWallet(address _targetAddress) onlyOwner public returns (bool) {
-        // require(_targetAddress != address(0));
-        fundWallet = _targetAddress;
-        return true;
-    }
- 
-    /**
-    * @dev Function that mints tokens to the fund address based on a multiplier
-    * @param _amount The amount of tokens to mint.
-    * @return A boolean that indicates if the operation was successful.
-    */
-    function mintTokensForFund(uint256 _amount) onlyOwner canMint public returns (bool) {
-        uint256 tokenAmountToFund = (_amount * tokenForFundFactor) / hundred;
-        totalSupply = totalSupply.add(tokenAmountToFund);
-        balances[fundWallet] = balances[fundWallet].add(tokenAmountToFund);
-        Mint(fundWallet, tokenAmountToFund);
-        Transfer(address(0), fundWallet, tokenAmountToFund);
-        return true;
-    }
- 
-    /**
-    * @dev Function that overrides MintableToken mint implmentation
-    * @param _to The address that will receive the minted tokens.
-    * @param _amount The amount of tokens to mint.
-    * @return A boolean that indicates if the operation was successful.
-    */
-    function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
-        // bool isFundMinted = mintTokensForFund(_amount);
-        // require(isFundMinted == true);
-        mintTokensForFund(_amount);
-        totalSupply = totalSupply.add(_amount);
-        balances[_to] = balances[_to].add(_amount);
-        Mint(_to, _amount);
-        Transfer(address(0), _to, _amount);
-        return true;
-    }
+contract LoveCoinMint is StandardToken, Ownable {
+  // Set a name for the token
+  string public name = "LoveCoin";
+  // Set a symbol for the token
+  string public symbol = "LOVE";
+  // Specify to what number of decimals the token be divisible to. Make 1:1 with gwei.
+  uint public decimals = 18;
+  // Holds the funds target wallet address for a percentage of minted tokens to be sent to.
+  address public fundWallet;
+
+
+  event Mint(address indexed to, uint256 amount);
+  event MintFinished();
+
+  bool public mintingFinished = false;
+
+
+  modifier canMint() {
+      require(!mintingFinished);
+      _;
+  }
+
+  /**
+  * @dev Function to stop minting new tokens.
+  * @return True if the operation was successful.
+  */
+  function finishMinting() onlyOwner canMint public returns (bool) {
+      mintingFinished = true;
+      MintFinished();
+      return true;
+  }
+
+  /**
+  * @dev Function to set fundAddress. This address is where fund minted tokens are destined for.
+  * @param _targetAddress The address that will receive the minted tokens.
+  * @return A boolean that indicates if the operation was successful.
+  */
+  function setFundWallet(address _targetAddress) onlyOwner public returns (bool) {
+      require(_targetAddress != address(0));
+      fundWallet = _targetAddress;
+      return true;
+  }
+
+  /**
+  * @dev Function that mints tokens to the fund address based on a multiplier
+  * @param _amount The amount of tokens to mint.
+  * @return A boolean that indicates if the operation was successful.
+  */
+  function mintTokensForFund(uint256 _amount) onlyOwner canMint public returns (bool) {
+      totalSupply = totalSupply.add(_amount);
+      balances[fundWallet] = balances[fundWallet].add(_amount);
+      Mint(fundWallet, _amount);
+      Transfer(address(0), fundWallet, _amount);
+      return true;
+  }
+
+  /**
+  * @dev Function that overrides MintableToken mint implmentation
+  * @param _to The address that will receive the minted tokens.
+  * @param _amount The amount of tokens to mint.
+  * @return A boolean that indicates if the operation was successful.
+  */
+  function mint(address _to, uint256 _amount) onlyOwner canMint public returns (bool) {
+      mintTokensForFund(_amount);
+      totalSupply = totalSupply.add(_amount);
+      balances[_to] = balances[_to].add(_amount);
+      Mint(_to, _amount);
+      Transfer(address(0), _to, _amount);
+      return true;
+  }
  
 }
  
 /**
- * @title EtherealizeCrowdsale
- * @dev EtherealizeCrowdsale is a base contract for managing a token crowdsale.
+ * @title LoveCoinPresale
+ * @dev LoveCoinPresale is a base contract for managing a token crowdsale.
  * Crowdsales have a start and end timestamps, where investors can make
  * token purchases and the crowdsale will assign them tokens based
  * on a token per ETH rate. Funds collected are forwarded to a wallet
  * as they arrive.
  */
-contract EtherealizeCrowdsale is Ownable {
+contract LoveCoinPresale is Ownable {
   using SafeMath for uint256;
- 
-  // The token being sold
-  EtherealizeMint public token;
- 
-  // start and end timestamps where investments are allowed (both inclusive)
+  /* The token being sold */
+  LoveCoinMint public token;
+  /* Start and end timestamps where investments are allowed (both inclusive) */
   uint256 public startTime;
   uint256 public endTime;
- 
-  // address where funds are collected
+  /* Address where funds are collected */
   address public wallet;
- 
-  // how many token units a buyer gets per wei
+  /* How many token units a buyer gets per wei */
   uint256 public rate;
- 
-  // amount of raised money in wei
+  /* Amount of raised money in wei */
   uint256 public weiRaised;
- 
+  /* Amount of wei that results in no further funds being able to produce more tokens */
+  uint256 public weiHardcap;
+  /* Flag to inform the contract that bonuses have been defined and that crowdsale may begin. Default false. */
+  bool public bonusesSet = false;
+  /* Set up bonus thresholds in Wei */
+  uint256 public maxTierWei;
+  uint256 public secondTierWei;
+  uint256 public thirdTierWei;
+  uint256 public fourthTierWei;
+  uint256 public fifthTierWei;
+  /* Set up bonus multipliers based off above tiers */
+  uint256 public maxTierBonus;
+  uint256 public secondTierBonus;
+  uint256 public thirdTierBonus;
+  uint256 public fourthTierBonus;
+  uint256 public fifthTierBonus;
+  uint256 public hundredPercent = 100;
   /**
-   * event for token purchase logging
-   * @param purchaser who paid for the tokens
-   * @param beneficiary who got the tokens
-   * @param value weis paid for purchase
-   * @param amount amount of tokens purchased
-   */
+  * event for token purchase logging
+  * @param purchaser who paid for the tokens
+  * @param beneficiary who got the tokens
+  * @param value weis paid for purchase
+  * @param amount amount of tokens purchased
+  */
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
- 
- 
-  function EtherealizeCrowdsale() public {
-    
+  event RateDecision(uint256 value);
+
+  function LoveCoinPresale() public {
   }
- 
- function SetupCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, address _tokenAddress) onlyOwner public {
+
+  function setupCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, uint256 _weiHardcap, address _wallet, address _tokenAddress) onlyOwner public {
     require(_startTime >= now);
     require(_endTime >= _startTime);
+    require(_weiHardcap > 0);
     require(_rate > 0);
     require(_wallet != address(0));
     require(_tokenAddress != address(0));
-     
-    token = EtherealizeMint(_tokenAddress);
-    // token = createTokenContract(_tokenAddress);
+    require(bonusesSet != false);
+    token = LoveCoinMint(_tokenAddress);
     token.setFundWallet(_wallet);
     startTime = _startTime;
     endTime = _endTime;
-    rate = _rate * 1 ether;
+    rate = _rate;
+    weiHardcap = _weiHardcap;
     wallet = _wallet;
- }
-  // creates the token to be sold.
-  // override this method to have crowdsale of a specific mintable token.
-//   function createTokenContract() internal returns (EtherealizeMint) {
-//     return new EtherealizeMint();
-//   }
- 
- 
-  // fallback function can be used to buy tokens
+  }
+
+  function setStartTime(uint256 _startTime) onlyOwner public {
+    require(_startTime >= now);
+    startTime = _startTime;
+  }
+
+  function setToken(address _tokenAddress) onlyOwner public {
+    require(_tokenAddress != address(0));
+    token = LoveCoinMint(_tokenAddress);
+  }
+
+  function setEndTime(uint256 _endTime) onlyOwner public {
+    require(startTime > 0);
+    require(_endTime >= startTime);
+    endTime = _endTime;
+  }
+
+  function setFundWallet(address _wallet) onlyOwner public {
+    require(_wallet != address(0));
+    token.setFundWallet(_wallet);
+    wallet = _wallet;
+  }
+
+  function setTokenOwner(address _targetAddress) onlyOwner public {
+    require(_targetAddress != address(0));
+    require(token != address(0));
+    token.transferOwnership(_targetAddress);
+  }
+
+  function setBonuses(uint256 _maxTierWei, uint256 _secondTierWei, uint256 _thirdTierWei, uint256 _fourthTierWei, uint256 _fifthTierWei, uint256 _maxTierBonus, uint256 _secondTierBonus, uint256 _thirdTierBonus, uint256 _fourthTierBonus, uint256 _fifthTierBonus)  onlyOwner public {
+    require(_maxTierWei > 0);
+    require(_secondTierWei > 0);
+    require(_thirdTierWei > 0);
+    require(_fourthTierWei > 0);
+    require(_fifthTierWei > 0);
+    require(_maxTierBonus > 0);
+    require(_secondTierBonus > 0);
+    require(_thirdTierBonus > 0);
+    require(_fourthTierBonus > 0);
+    require(_fifthTierBonus > 0);
+    maxTierWei = _maxTierWei;
+    secondTierWei = _secondTierWei;
+    thirdTierWei = _thirdTierWei;
+    fourthTierWei = _fourthTierWei;
+    fifthTierWei = _fifthTierWei;
+    maxTierBonus = _maxTierBonus;
+    secondTierBonus = _secondTierBonus;
+    thirdTierBonus = _thirdTierBonus;
+    fourthTierBonus = _fourthTierBonus;
+    fifthTierBonus = _fifthTierBonus;
+    bonusesSet = true;
+    }
+  
+  /* Fallback function can be used to buy tokens */
   function () external payable {
     buyTokens(msg.sender);
   }
- 
-  // low level token purchase function
+
+  function getBonusRate(uint256 _weiAmount) public returns (uint256) {
+    uint256 standardBonus = 100;
+    if (_weiAmount >= maxTierWei) {
+      RateDecision(11);
+      return standardBonus.add(maxTierBonus);
+    }
+    if (_weiAmount >= secondTierWei) {
+      RateDecision(12);
+      return standardBonus.add(secondTierBonus);
+    }
+    if (_weiAmount >= thirdTierWei) {
+      RateDecision(13);
+      return standardBonus.add(thirdTierBonus);
+    }
+    if (_weiAmount >= fourthTierWei) {
+      RateDecision(14);
+      return standardBonus.add(fourthTierBonus);
+    }
+    if (_weiAmount >= fifthTierWei) {
+      RateDecision(15);
+      return standardBonus.add(fifthTierBonus);
+    }
+    return standardBonus;
+  }
+
   function buyTokens(address beneficiary) public payable {
     require(beneficiary != address(0));
     require(validPurchase());
- 
+    /* Obtain the value of wei being sent into the contract */
     uint256 weiAmount = msg.value;
- 
-    // calculate token amount to be created
-    uint256 tokens = weiAmount.mul(rate);
- 
-    // update state
+    /* Return the bonus rate based off the inserted wei*/
+    uint256 bonusRate = getBonusRate(weiAmount);
+    /* Calculate token amount to be created */
+    uint256 bonusMultiplier = bonusRate.mul(rate).div(hundredPercent);
+    RateDecision(bonusMultiplier);
+    RateDecision(bonusRate);
+    RateDecision(bonusRate.mul(rate));
+    /* Define the final number of tokens needing to be minted */
+    uint256 tokens = weiAmount.mul(bonusMultiplier);
+    /* Update state */
     weiRaised = weiRaised.add(weiAmount);
- 
+    /* Mint tokens from the token contract towards target beneficiaries */
     token.mint(beneficiary, tokens);
+    /* Create an event to be logged */
     TokenPurchase(msg.sender, beneficiary, weiAmount, tokens);
- 
+    /* Forward / transfer the received ether towards the target wallet */
     forwardFunds();
   }
  
-  // send ether to the fund collection wallet
-  // override to create custom fund forwarding mechanisms
+  /* Send ether to the fund collection wallet */
   function forwardFunds() internal {
     wallet.transfer(msg.value);
   }
  
-  // @return true if the transaction can buy tokens
+  /* @return true if the transaction can buy tokens */
   function validPurchase() internal view returns (bool) {
     bool withinPeriod = now >= startTime && now <= endTime;
     bool nonZeroPurchase = msg.value != 0;
-    return withinPeriod && nonZeroPurchase;
+    bool belowWeiCap = weiRaised < weiHardcap;
+    return withinPeriod && nonZeroPurchase && belowWeiCap;
   }
  
-  // @return true if crowdsale event has ended
+  /* @return true if crowdsale event has ended */
   function hasEnded() public view returns (bool) {
     return now > endTime;
   }
  
- 
 }
+
+// [x] Set statements for block bonuses before minting 
+// [] Set referee capability 
+// [x] During set up of crowdsale, specify the base token rate eg 15,000 tokens
+// [x] During set up of crowdsale, specify the hard cap eg 2000 ether
+// [x] Set up the start and end time
+// [x] Set up the target fund address 
+// [x] Set up the token address
+// [x] Future set up token address owner to be another address
+// [x] Future set different fund address
+
+
+// 0x692a70d2e424a56d2c6c27aa97d1a86395877b3a
