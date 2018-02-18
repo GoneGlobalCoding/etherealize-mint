@@ -16,6 +16,7 @@ console.log(fundWallet);
 
 var gasLimit = web3.eth.getBlock('latest').gasLimit;
 
+1517317936, 1519909936, 15000, 2000000000000000000000, "0xca35b7d915458ef540ade6068dfe2f44e8fa733c", "0x692a70d2e424a56d2c6c27aa97d1a86395877b3a"
 
 /**
  * Define the contract interface (get from ABI compilation of solcjs)
