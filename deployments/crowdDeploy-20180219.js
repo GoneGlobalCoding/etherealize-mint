@@ -30,3 +30,103 @@ var contractInstance = contract.new(
        console.log('Contracted mine! address: ' + contract.address + ' transactionHash: ' + contract.transactionHash);
    }
 })
+
+// OWNER IS account[1] - 0xe723cfe87766398f7c7d378c56b1aa3f3007f321
+// Contracted mine! address: 0x135257e64f282b8307881e92f2968c9534122895 transactionHash: 0x10a1c567acfa748ae112ff955d083a2c552a35553d3a66a11bc5a9a9ea45f77e
+
+// crowdsale = web3.eth.contract(ABI)
+// crowdsaleInstance = crowdsale.at("0x135257e64f282b8307881e92f2968c9534122895")
+//crowdsaleInstance.owner()
+//"0xe723cfe87766398f7c7d378c56b1aa3f3007f321"
+
+
+
+
+// token = web3.eth.contract(ABI)
+// tokenInstance = token.at("0xad01da7b130da961067a5712cfe5141d9de3e0d8")
+// tokenInstance.owner()
+// "0xe47c4befb25055860fd026e96885b30c7a244b30"
+// tokenInstance.owner()
+// > personal.unlockAccount("0xe47c4befb25055860fd026e96885b30c7a244b30")
+// true
+// > tokenInstance.transferOwnership("0x135257e64f282b8307881e92f2968c9534122895",{from: "0xe47c4befb25055860fd026e96885b30c7a244b30"})
+// "0x11725d5d4242978fa14cf81a25822efa83f3b5cfe94ca229717adb4b3d2c2488"
+// > tokenInstance.owner()
+// 0x135257e64f282b8307881e92f2968c9534122895
+
+
+// 5. To start the crowdsale, you will need to execute the SetupCrowdsale function, passing the correct parameters (and types) into the function - followed by an object defining where you are sending this request from, with an appropriate level of Gas
+// # Prepare the variables (note - this will specify you to start the crowdsale from 10 minutes from now (now + 600 seconds)
+ 
+// > startTime = web3.eth.getBlock(web3.eth.blockNumber).timestamp + 600;
+// 1513231829
+ 
+ 
+// > endTime = startTime + (86400 * 30);
+// 1515823829
+ 
+// > rate = 8000;
+// 8000
+ 
+// # Specify your wallet to receive funds that people send to the crowdsale
+// > fundWallet = "0xe47c4befb25055860fd026e96885b30c7a244b30";
+// "0xe47c4befb25055860fd026e96885b30c7a244b30"
+ 
+// # Specify the address of the token contract we are using for minting
+// > tokenAddress = "0xad01da7b130da961067a5712cfe5141d9de3e0d8";
+// "0x3ded45a20f196ecb673477d3a8f4b3fa05cbe348"
+ 
+// # Unlock the account that OWNS the Crowdsale contract -as only this account can start the crowdsale
+// > personal.unlockAccount("0xe47c4befb25055860fd026e96885b30c7a244b30")
+// Unlock account 0xe47c4befb25055860fd026e96885b30c7a244b30
+// Passphrase:
+// true
+
+// _maxTierWei = web3.toWei('100','ether')
+// _secondTierWei = web3.toWei('50','ether')
+// _thirdTierWei = web3.toWei('25','ether')
+// _fourthTierWei = web3.toWei('10','ether')
+// _fifthTierWei = web3.toWei('1','ether')
+// _maxTierBonus = 40
+// _secondTierBonus = 20
+// _thirdTierBonus = 10
+// _fourthTierBonus = 5
+// _fifthTierBonus = 2.5
+// _hardcap = web3.toWei('2000','ether')
+// crowdsaleInstance.setBonuses(_maxTierWei,_secondTierWei,_thirdTierWei,_fourthTierWei,_fifthTierWei,_maxTierBonus,_secondTierBonus,_thirdTierBonus,_fourthTierBonus,_fifthTierBonus,{from: "0xe47c4befb25055860fd026e96885b30c7a244b30", nonce: '114', gasPrice:'10000000000', gas: '4700036'})
+// TX: 0x5a1edda48a3906d30ab80ec8e098ad92f7d9137835465e354c908bebb4ec0d54
+
+// > crowdsaleInstance.setupCrowdsale(startTime,endTime,rate,_hardcap,fundWallet,tokenAddress, {from: "0xe47c4befb25055860fd026e96885b30c7a244b30", nonce: '114', gasPrice:'10000000000', gas: '4700036'})
+// TX "0x0e48b034677fc9539fd06228ddd8515e8fa6f9c7c627d72dc4104c9eaba0757f"
+
+// CONTRIBUTE TO THE CROWDSALE
+
+
+// ON REMIX: 3:25pm ===================================================================================================================================================================
+// 1 Deploy crowdsale
+// 2 Deploy mint
+// 3 Make crowdsale the owner of mint
+// * 4 setupContributionBonuses - "100000000000000000000", "50000000000000000000", "25000000000000000000", "10000000000000000000", "1000000000000000000", 40, 20, 10, 5, 2
+// * 5 setTimeBonuses - 604800, 604800, 604800, 604800, 40, 15, 5, 2
+// startTime = web3.eth.getBlock(web3.eth.blockNumber).timestamp + 600;
+// endTime = startTime + (86400 * 30);
+// * 6 setupCrowdsale - "1519275560", "1521867560", 8000, 2000000000000000000000, "0xca35b7d915458ef540ade6068dfe2f44e8fa733c", "0xec5bee2dbb67da8757091ad3d9526ba3ed2e2137"
+
+// Check can and cannot transfer
+// Check ability to modify the transfer
+// Check ability to change owner of token
+// Once setup, try buyToken
+// RESULT:
+// *Check buy token with correct bonues based off contribution
+// buyToken - "0xca35b7d915458ef540ade6068dfe2f44e8fa733c" with 1 ether - with 40 time bonus and 2 commit, expect 11360
+// buyToken - "0xca35b7d915458ef540ade6068dfe2f44e8fa733c" with 10 ether - with 40 time bonus and 5 commit, expect 116000 - 11600 rate
+// buyToken - "0xca35b7d915458ef540ade6068dfe2f44e8fa733c" with 25 ether - with 40 time bonus and 10 commit, expect 300000 - 12000 rate
+// buyToken - "0xca35b7d915458ef540ade6068dfe2f44e8fa733c" with 50 ether - with 40 time bonus and 20 commit, expect 640000 - 12800 rate
+// buyToken - "0xca35b7d915458ef540ade6068dfe2f44e8fa733c" with 100 ether - with 40 time bonus and 40 commit, expect 1440000 - 14400 rate
+// *Check can transfer or cannot transfer
+// transfer - "0x583031d1113ad414f02576bd6afabfb302140225","20000000000000000000" // 20 tokens
+// *Check can change transfer status from crowdsale to true
+// setTransferEnabled - true
+// set time bonues to minutes to see how they change
+// 60, 60, 60, 60, 40, 15, 5, 2
+// check ability to transfer ownership of token to a new owner
